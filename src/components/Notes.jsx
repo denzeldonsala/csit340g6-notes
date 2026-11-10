@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import NoteCard from "./NoteCard.jsx";
 
@@ -15,6 +14,20 @@ function Notes() {
       body: "Practice writing one handler for many inputs.",
     },
   ]);
+
+  const [formData, setFormData] = useState({
+    title: "",
+    body: "",
+  });
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  }
 
   return (
     <div className="grid min-h-screen grid-cols-[420px_1fr]">
@@ -40,11 +53,15 @@ function Notes() {
           <input
             name="title"
             placeholder="Title"
+            value={formData.title}
+            onChange={handleChange}
             className="h-[52px] w-full border border-[#e6e6e6] px-4 text-lg outline-none placeholder:text-black/40 placeholder:italic focus:border-[#cf7d7d]"
           />
           <textarea
             name="body"
             placeholder="Write your note"
+            value={formData.body}
+            onChange={handleChange}
             className="h-[120px] w-full resize-none border border-[#e6e6e6] px-4 py-3 text-lg outline-none placeholder:text-black/40 placeholder:italic focus:border-[#cf7d7d]"
           />
           <button
@@ -65,10 +82,7 @@ function Notes() {
               key={note.id}
               className="relative min-h-32 bg-white px-6 py-5 shadow-[0_2px_4px_0_rgba(0,0,0,0.2),0_25px_50px_0_rgba(0,0,0,0.1)]"
             >
-              <NoteCard
-                title={note.title}
-                body={note.body}
-              />
+              <NoteCard title={note.title} body={note.body} />
 
               <button
                 type="button"
