@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import NoteCard from "./NoteCard.jsx";
 
 const startingNotes = [
@@ -23,6 +23,7 @@ function Notes() {
   const [formData, setFormData] = useState({ title: "", body: "",});
 
   const [search, setSearch] = useState("");
+  const titleRef = useRef(null)
 
   const filteredNotes = notes.filter((note) =>
     note.title.toLowerCase().includes(search.toLowerCase()),
@@ -49,29 +50,32 @@ function Notes() {
     }));
   }
 
-  function handleSubmit(e) {
+function handleSubmit(e) {
     e.preventDefault();
 
     const title = formData.title.trim();
     const body = formData.body.trim();
 
-    if (!title || !body) {
-      return;
+    if (title === "" || body === "") {
+        alert("Please enter both a title and a note.");
+        return;
     }
 
     const newNote = {
-      id: Date.now(),
-      title: title,
-      body: body,
+        id: Date.now(),
+        title,
+        body,
     };
 
     setNotes((prevNotes) => [...prevNotes, newNote]);
 
     setFormData({
-      title: "",
-      body: "",
+        title: "",
+        body: "",
     });
-  }
+    titleRef.current?.focus();
+
+}
 
   function handleDelete(id) {
     setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
@@ -101,6 +105,7 @@ function Notes() {
             NEW NOTE
           </p>
           <input
+            ref={titleRef}
             name="title"
             placeholder="Title"
             value={formData.title}
