@@ -1,45 +1,47 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import NoteCard from "./NoteCard.jsx";
 
 const startingNotes = [
   {
     id: 1,
-    title: 'Review map and filter',
-    body: 'Redo the TodoMVC steps without looking at the guide',
+    title: "Review map and filter",
+    body: "Redo the TodoMVC steps without looking at the guide",
   },
   {
     id: 2,
-    title: 'Prepare for the quiz',
-    body: 'Practice writing one handler for many inputs.',
+    title: "Prepare for the quiz",
+    body: "Practice writing one handler for many inputs.",
   },
-]
+];
 
 function Notes() {
   const [notes, setNotes] = useState(() => {
-    const saved = localStorage.getItem('notes')
-    return saved ? JSON.parse(saved) : startingNotes
-  })
+    const saved = localStorage.getItem("notes");
+    return saved ? JSON.parse(saved) : startingNotes;
+  });
 
-  const [formData, setFormData] = useState({ title: "", body: "",});
+  const [formData, setFormData] = useState({ title: "", body: "" });
 
   const [search, setSearch] = useState("");
-  const titleRef = useRef(null)
+  const titleRef = useRef(null);
 
-  const filteredNotes = notes.filter((note) =>
-    note.title.toLowerCase().includes(search.toLowerCase()),
-  );
-
+  const filteredNotes = useMemo(() => {
+    console.log("filtering");
+    return notes.filter((note) =>
+      note.title.toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [notes, search]);
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
   }, [notes]);
 
   useEffect(() => {
     const id = setTimeout(() => {
-      localStorage.setItem('draft', JSON.stringify(formData))
+      localStorage.setItem("draft", JSON.stringify(formData));
       // console.log('draft saved:', formData.title)
-    }, 1000)
-    return () => clearTimeout(id)
-  }, [formData])
+    }, 1000);
+    return () => clearTimeout(id);
+  }, [formData]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -50,32 +52,31 @@ function Notes() {
     }));
   }
 
-function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
 
     const title = formData.title.trim();
     const body = formData.body.trim();
 
     if (title === "" || body === "") {
-        alert("Please enter both a title and a note.");
-        return;
+      alert("Please enter both a title and a note.");
+      return;
     }
 
     const newNote = {
-        id: Date.now(),
-        title,
-        body,
+      id: Date.now(),
+      title,
+      body,
     };
 
     setNotes((prevNotes) => [...prevNotes, newNote]);
 
     setFormData({
-        title: "",
-        body: "",
+      title: "",
+      body: "",
     });
     titleRef.current?.focus();
-
-}
+  }
 
   function handleDelete(id) {
     setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
