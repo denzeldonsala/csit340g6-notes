@@ -20,7 +20,13 @@ function Notes() {
     return saved ? JSON.parse(saved) : startingNotes;
   });
 
-  const [formData, setFormData] = useState({ title: "", body: "" });
+  const [formData, setFormData] = useState(() => {
+  const savedDraft = localStorage.getItem("draft");
+
+  return savedDraft
+    ? JSON.parse(savedDraft)
+    : { title: "", body: "" };
+});
 
   const [search, setSearch] = useState("");
   const titleRef = useRef(null);
@@ -78,9 +84,9 @@ function Notes() {
     titleRef.current?.focus();
   }
 
-  const handleDelete = useCallback((id) => {
-    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
-  }, [notes]);
+const handleDelete = useCallback((id) => {
+  setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+}, []);
 
   return (
     <div className="grid min-h-screen grid-cols-[420px_1fr]">
